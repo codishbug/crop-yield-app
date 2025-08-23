@@ -89,19 +89,24 @@ def main():
     st.title("🌾 Indian Crop Yield Prediction App")
     st.write("Predict crop yield based on agricultural and environmental factors.")
 
-    # Inputs
-    crop = st.selectbox("Crop", crop_options, index=0)
+    # Inputs without preselected values
+    crop = st.selectbox("Crop", ["Select Crop"] + crop_options)
+    season = st.selectbox("Season", ["Select Season"] + season_options)
+    state = st.selectbox("State", ["Select State"] + state_options)
+
     crop_year = st.number_input("Crop Year", min_value=2000, max_value=2100, value=2025, step=1)
-    season = st.selectbox("Season", season_options, index=0)
-    state = st.selectbox("State", state_options, index=0)
     area = st.number_input("Area (in hectares)", min_value=0.0, value=1000.0, step=100.0)
     production = st.number_input("Production (in tonnes)", min_value=0.0, value=500.0, step=10.0)
     rainfall = st.number_input("Annual Rainfall (mm)", min_value=0.0, value=1200.0, step=10.0)
     fertilizer = st.number_input("Fertilizer (kg/ha)", min_value=0.0, value=200.0, step=5.0)
     pesticide = st.number_input("Pesticide (kg/ha)", min_value=0.0, value=50.0, step=1.0)
 
-    # Prediction + Report
+    # Ensure user selects crop, season, and state
     if st.button("📄 Generate Report"):
+        if crop == "Select Crop" or season == "Select Season" or state == "Select State":
+            st.error("Please select Crop, Season, and State before generating the report.")
+            return
+
         predicted_yield = predict_crop_yield(
             pipeline, crop, crop_year, season, state,
             area, production, rainfall, fertilizer, pesticide

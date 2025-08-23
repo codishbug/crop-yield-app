@@ -104,7 +104,7 @@ def main():
     # Ensure user selects crop, season, and state
     if st.button("📄 Generate Report"):
         if crop == "Select Crop" or season == "Select Season" or state == "Select State":
-            st.error("Please select Crop, Season, and State before generating the report.")
+            st.error("Please select all fields before generating the report.")
             return
 
         predicted_yield = predict_crop_yield(

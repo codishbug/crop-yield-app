@@ -122,14 +122,25 @@ def main():
         # -----------------------------
         # Visualization Charts
         # -----------------------------
-        st.subheader("📈 Visualization of Key Agricultural Indicators")
-        fig, ax = plt.subplots()
-        features = ["Area(ha)", "Production", "Rainfall", "Fertilizer", "Pesticide"]
+        st.subheader("📈 Visualization of Key Agricultural Inputs")
+        
+        fig, ax = plt.subplots(figsize=(8,5))
+        features = ["Area (ha)", "Production (t)", "Rainfall (mm)", "Fertilizer (kg/ha)", "Pesticide (kg/ha)"]
         values = [area, production, rainfall, fertilizer, pesticide]
-        ax.bar(features, values, color=['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336'])
+        colors_list = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#F44336']
+        
+        bars = ax.bar(features, values, color=colors_list)
+        
+        # Add value labels on top of each bar
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2.0, height + max(values)*0.01, f'{height:.1f}', ha='center', va='bottom', fontsize=10)
+        
         ax.set_ylabel("Value")
         ax.set_title("Crop Input Indicators")
+        ax.set_ylim(0, max(values)*1.2)  # Add some space on top for labels
         st.pyplot(fig)
+
 
         # -----------------------------
         # Recommendations
@@ -170,7 +181,6 @@ def main():
         styles = getSampleStyleSheet()
         elements = []
 
-        # Custom styles
         title_style = ParagraphStyle('TitleStyle', parent=styles['Title'], fontSize=24, textColor=colors.HexColor('#1A5276'), alignment=1)
         rec_heading_style = ParagraphStyle('RecHeadingStyle', parent=styles['Heading2'], fontSize=16, textColor=colors.HexColor('#5B2C6F'))
         outlook_heading_style = ParagraphStyle('OutlookHeadingStyle', parent=styles['Heading2'], fontSize=16, textColor=colors.HexColor('#E75480'))
@@ -241,7 +251,7 @@ def main():
             elements.append(Paragraph(f"- {o}", normal_style))
         elements.append(Spacer(1, 12))
 
-        # Charts
+        # Charts in PDF
         img_buffer = BytesIO()
         fig.savefig(img_buffer, format='PNG', bbox_inches='tight')
         img_buffer.seek(0)
@@ -254,22 +264,12 @@ def main():
 
         # Resources
         elements.append(Paragraph("Useful Resources:", resource_heading_style))
-        
-        # Style for normal text
-        normal_text_style = ParagraphStyle(
-            'NormalTextStyle',
-            parent=styles['Normal'],
-            fontSize=12,
-            textColor=colors.black
-        )
-        
-        # Resources with clickable-looking URLs
+        normal_text_style = ParagraphStyle('NormalTextStyle', parent=styles['Normal'], fontSize=12, textColor=colors.black)
         resources = [
             ("Indian Council of Agricultural Research (ICAR)", "https://icar.org.in/"),
             ("Ministry of Agriculture & Farmers Welfare", "https://agricoop.nic.in/"),
             ("FAO Crop Production Guidelines", "https://www.fao.org/crop-production/en/")
         ]
-        
         for name, url in resources:
             resource_line = f"{name}: <u><font color='#1F618D'>{url}</font></u>"
             elements.append(Paragraph(resource_line, normal_text_style))

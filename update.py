@@ -50,9 +50,9 @@ def predict_crop_yield(pipeline, crop, crop_year, season, state, area, productio
     return prediction[0]
 
 # -----------------------------
-# Generate Dynamic Future Outlook
+# Generate Dynamic Future Outlook (Updated with predicted_yield)
 # -----------------------------
-def generate_future_outlook(rainfall, fertilizer, pesticide, season):
+def generate_future_outlook(rainfall, fertilizer, pesticide, season, predicted_yield):
     insights = []
 
     # Rainfall analysis
@@ -77,8 +77,13 @@ def generate_future_outlook(rainfall, fertilizer, pesticide, season):
     else:
         insights.append("Pesticide usage is under control.")
 
-    # Season-based remark
-    insights.append(f"Based on current inputs, yield looks promising for the {season} season.")
+    # Yield-based remark
+    if predicted_yield < 1.5:
+        insights.append(f"Predicted yield is low for the {season} season. Improved irrigation, fertilizer, and pest management could increase yield.")
+    elif predicted_yield < 2.5:
+        insights.append(f"Predicted yield is moderate for the {season} season. Optimizing inputs could further improve yield.")
+    else:
+        insights.append(f"Predicted yield looks promising for the {season} season.")
 
     return insights
 
@@ -143,7 +148,7 @@ def main():
         # Future Outlook (Dynamic)
         # -----------------------------
         st.subheader("🔮 Future Outlook")
-        outlook = generate_future_outlook(rainfall, fertilizer, pesticide, season)
+        outlook = generate_future_outlook(rainfall, fertilizer, pesticide, season, predicted_yield)
         for o in outlook:
             st.markdown(f"- {o}")
 
@@ -266,11 +271,9 @@ def main():
         ]
         
         for name, url in resources:
-            # Use mini-HTML for URL styling
             resource_line = f"{name}: <u><font color='#1F618D'>{url}</font></u>"
             elements.append(Paragraph(resource_line, normal_text_style))
             elements.append(Spacer(1, 6))
-
 
         doc.build(elements)
         buffer.seek(0)
